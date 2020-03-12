@@ -1,135 +1,90 @@
 class TicTacToe
-
   def initialize(board = nil)
-    # @board = board || Array.new(9, " ")
+  def initialize(board= nil)
+    @board = board || Array.new(9," ")
   end
-
-  def play
-    @board = Array.new(9, " ")
-    # Play until someone wins or there is a draw
-    turn until over?
-    # Congratulate the winner
-    won? ? puts("Congratulations #{winner}!") : puts("Cat's Game!")
-    # Ask if they'd like to play again
-    puts "Would you like to play again? (Y or N)"
-    # If yes, then #play again
-    gets.strip.downcase == "y" || gets.strip.downcase == "yes" ? play : puts("Goodbye!")
-  end
-
-  # #turn gets the player's move, checks that the move is valid, then updates the board with the new move and finally displays the board.
-  # Called by #play
-  def turn
-    puts "Player #{current_player}, please enter a number 1-9:"
-    input = gets.strip
-    index = input_to_index(input)
-    cp = current_player
-    if valid_move?(index)
-      move(index, cp)
-      display_board
-    else
-      turn
-    end
-  end
-
-  # #input_to_index converts the player's choice of position to the corresponding index in the board array.
-  # Called by #turn
-  def input_to_index(input)
-    input.to_i - 1
-  end
-
-  # #valid_move? checks to see if current player's move choice is both available and a position on the board (has an index between 0-8)
-  # Called by #turn
-  def valid_move?(index)
-    index.between?(0,8) && !position_taken?(index)
-  end
-
-  # #position_taken? checks to see if a position on the board is already occupied by an "X" or "O".
-  # Called by #valid_move
-  def position_taken?(index)
-    !(@board[index].nil? || @board[index] == " ")
-  end
-
-  # #move updates the board array with the current player's valid move choice
-  # Called by #turn
-  def move(index, token = "X")
-    @board[index] = token
-  end
-
-  # #current_player checks which turn it is to determine if it's X or O's turn
-  # Called by #move and by #turn
-  def current_player
-    turn_count % 2 == 0 ? "X" : "O"
-  end
-
-  # #turn_count keeps track of the number of turns that have been taken
-  # Called by #current_player
-  def turn_count
-    @board.count{|token| token == "X" || token == "O"}
-  end
-
-  # #display_board displays an ascii Tic Tac Toe board.
-  # Called by #turn
-  def display_board
-    puts " #{@board[0]} | #{@board[1]} | #{@board[2]} "
-    puts "-----------"
-    puts " #{@board[3]} | #{@board[4]} | #{@board[5]} "
+  WIN_COMBINATIONS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
+@@ -10,20 +10,23 @@ def display_board
     puts "-----------"
     puts " #{@board[6]} | #{@board[7]} | #{@board[8]} "
   end
-
-  # #over? checks to see if the game has been won or is a draw. If so, the game is over.
-  def over?
-    won? || draw?
+  def move(input,character="X")
+    index= input.to_i - 1
+    @board[index]=character
+  def input_to_index(input)
+    index = input.to_i - 1
   end
-
-  # #won? checks to see if a winning combination exists
-  def won?
-    a = WIN_COMBINATIONS.find{
-      |combo|
-      @board[combo[0]] == "X" && @board[combo[1]] == "X" && @board[combo[2]] == "X"
-    }
-    b = WIN_COMBINATIONS.find{
-      |combo|
-      @board[combo[0]] == "O" && @board[combo[1]] == "O" && @board[combo[2]] == "O"
-    }
-    return a || b
+  def move(input ,character="X")
+    index = input_to_index(input)
+    @board[index]= character
   end
-
-  # WIN_COMBINATIONS holds 8 possible winning combinations of 3 board positions
-  WIN_COMBINATIONS = [
-    #Board layout
-    # 0 | 1 | 2
-    #-----------
-    # 3 | 4 | 5
-    #-----------
-    # 6 | 7 | 8
-
-    [0,1,2], # Top row
-    [3,4,5],  # Middle row
-    [6,7,8],  # Bottom row
-    [0,3,6],  # Left col
-    [1,4,7],  # Middle col
-    [2,5,8],  # Right col
-    [0,4,8],  # Diagnol 1
-    [2,4,6]  # Diagnol 2
-  ]
-
-  # #draw? checks to see if the board is full, but there is no winning combination
-  def draw?
-    !won? && full?
-  end
-
-  # #full? checks to see if the board is full, ie no empty spaces remain
-  def full?
-    !@board.any?{|x| x == "" || x == " "}
-  end
-
-  # #winner checks to see what kind of token is in the winning combination, if one exists
-  def winner
-    if won?
-      @board[won?[0]] == "X" ? "X" : "O"
+  def position_taken?(index)
+    if  @board[index]== "X" || @board[index]== "O"
+      if  @board[index]== "X" || @board[index]== "O"
+      return true
     else
-      nil
+      return false
+    end
+  end
+  def valid_move?(input)
+      index= input.to_i - 1
+    if index >= 0 && index <= 8
+    index = input_to_index(input)
+    if (0..8).include?(index)
+        if position_taken?(index)== false || position_taken?(index)== nil
+        true
+      else
+@@ -34,15 +37,15 @@ def valid_move?(input)
+  def turn
+    puts "Please enter 1-9:"
+    input= gets.chomp
+      index= input.to_i - 1
+    index= input_to_index(input)
+    if valid_move?(input)== true
+      move(index,current_player)
+      move(input,current_player)
+      display_board
+    else
+    until valid_move?(input)== true
+        puts "Please enter 1-9:"
+        input= gets.chomp
+        index= input.to_i - 1
+        index = input_to_index(input)
+      end
+    end
+  end
+@@ -80,7 +83,7 @@ def draw?
+       return true
+     end
+   end
+   def over?
+    def over?
+       if won? == true || full? == true
+         return true
+      end
+@@ -95,10 +98,9 @@ def winner
+       end
+     end
+  def play
+  over = over?
+    over = over?
+    until  over == true
+      if won? != false
+         winner
+      if won?!= false
+       break
+      end
+      if draw? == true
+@@ -108,12 +110,11 @@ def play
+      over = over?
+    end
+    if won?!= false
+       winner
+      winner
+      puts "Congratulations #{winner}!"
+    end
+    if draw? == true
+      puts "Cats Game!"
     end
   end
 
