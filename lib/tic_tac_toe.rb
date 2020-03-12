@@ -140,3 +140,5 @@ end
 
 end
 
+TicTacToe.new 
+
